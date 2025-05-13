@@ -1,25 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Ensure Press Start 2P is also imported if not done in index.html, but index.html is better for fonts */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  @apply bg-brand-light-bg text-brand-dark-text antialiased;
+  @apply bg-px-bg text-px-text font-pixel antialiased; /* Apply pixel font and bg */
+  /* For pixel art, sometimes crisp edges are preferred */
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Remove default browser scrollbar if you want a more retro feel, or style it */
+/* For simplicity, we'll keep default for now */
+
+/* Custom component styles (if needed for pixel art) */
+.btn-pixel {
+  @apply bg-px-primary text-px-bg-light py-2 px-4 border-2 border-px-border shadow-pixel-sm hover:bg-opacity-80 active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all;
 }
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
+
+.card-pixel {
+  @apply bg-px-bg-light p-4 sm:p-6 border-2 border-px-border shadow-pixel;
 }
-::-webkit-scrollbar-thumb {
-  background: #c4c4c4;
-  border-radius: 10px;
+
+/* Basic styling for form elements if not using @tailwindcss/forms with 'base' strategy */
+input[type="number"],
+select {
+  @apply bg-px-bg text-px-text border-2 border-px-border p-2 text-sm focus:ring-px-accent focus:border-px-accent font-pixel placeholder-px-text-dim;
+  border-radius: 0; /* Ensure no rounding */
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+input::placeholder {
+  @apply text-px-text-dim opacity-70;
+}
+select {
+  appearance: none; /* Remove default arrow for custom styling if desired */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239BADB7' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem; /* Make space for custom arrow */
 }
