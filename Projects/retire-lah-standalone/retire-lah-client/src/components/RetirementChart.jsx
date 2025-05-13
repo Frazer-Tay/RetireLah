@@ -17,6 +17,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+
 const RetirementChart = ({ data }) => {
   // Placeholder for no data remains the same
   if (!data || data.length === 0) {
@@ -56,14 +57,24 @@ const RetirementChart = ({ data }) => {
       <ResponsiveContainer width="100%" height={400}>
         <BarChart 
           data={data} 
-          margin={{ top: 10, right: 10, left: 20, bottom: 35 }} // Reduced bottom margin slightly, legend will take up space
+          margin={{ 
+            top: 10, 
+            right: 10, 
+            left: 20, 
+            bottom: 30 // Keep a reasonable bottom margin for X-axis label
+          }} 
           barGap={4} 
           barCategoryGap="20%"
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
           <XAxis 
             dataKey="age" 
-            label={{ value: 'Age', position: 'insideBottom', dy: 20, style: {fontSize: '0.875rem', fill: brandMediumTextColor, fontWeight: 500, fontFamily: 'Inter'} }} 
+            label={{ 
+              value: 'Age', 
+              position: 'insideBottom', 
+              dy: 15, // "Age" label closer to the X-axis ticks
+              style: {fontSize: '0.875rem', fill: brandMediumTextColor, fontWeight: 500, fontFamily: 'Inter'} 
+            }} 
             tick={{fontSize: '0.75rem', fill: brandLightTextColor, fontFamily: 'Inter'}}
             interval={xAxisInterval}
             padding={{ left: 10, right: 10 }}
@@ -78,16 +89,17 @@ const RetirementChart = ({ data }) => {
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(209, 213, 219, 0.4)' }}/>
           <Legend 
-            wrapperStyle={{
-              fontSize: '0.875rem', 
-              fontFamily: 'Inter', 
-              paddingTop: '10px', // Add some padding above the legend
-              // No paddingBottom or position:relative needed if margin on BarChart is sufficient
-            }} 
             verticalAlign="bottom" 
             align="center"
             iconType="square" 
             iconSize={10}
+            wrapperStyle={{ // Style the wrapper for the legend
+              fontSize: '0.875rem', 
+              fontFamily: 'Inter',
+              paddingTop: 5,    // Space between X-axis ticks and legend
+              // position: 'relative', // May not be needed
+              // bottom: 0,           // Adjust this if needed to push it further down from ticks
+            }}
             payload={[
                 { value: 'Capital Invested', type: 'square', id: 'ID01', color: chartCapitalColor },
                 { value: 'Capital Gains', type: 'square', id: 'ID02', color: chartGainsColor },
