@@ -60,7 +60,8 @@ const RetirementChart = ({ data }) => {
             top: 10, 
             right: 10, 
             left: 20, 
-            bottom: 50 // Increased bottom margin to accommodate everything comfortably
+            // Increased bottom margin significantly to make ample space
+            bottom: 60 
           }} 
           barGap={4} 
           barCategoryGap="20%"
@@ -68,19 +69,17 @@ const RetirementChart = ({ data }) => {
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
           <XAxis 
             dataKey="age" 
-            // The 'height' prop can also influence space below X-axis ticks
-            // but we usually control with dy of label and legend paddingTop.
-            // Let's keep X-axis label dy moderate, ensuring legend has space above it.
             label={{ 
               value: 'Age', 
               position: 'insideBottom', 
-              dy: 35, // This positions "Age" label 35px below the X-axis line
+              // This dy positions "Age" label relative to X-axis line.
+              // It needs to be large enough to be below the legend.
+              dy: 45, 
               style: {fontSize: '0.875rem', fill: brandMediumTextColor, fontWeight: 500, fontFamily: 'Inter'} 
             }} 
             tick={{fontSize: '0.75rem', fill: brandLightTextColor, fontFamily: 'Inter'}}
             interval={xAxisInterval}
             padding={{ left: 10, right: 10 }}
-            // tickMargin={5} // Adds space between ticks and axis line
           />
           <YAxis 
             tickFormatter={formatYAxis} 
@@ -99,9 +98,8 @@ const RetirementChart = ({ data }) => {
             wrapperStyle={{
               fontSize: '0.875rem', 
               fontFamily: 'Inter',
-              // This padding is CRUCIAL for pushing the legend DOWN from the X-axis ticks.
-              // Increase this value to move the legend further down.
-              paddingTop: 20, 
+              // SIGNIFICANTLY INCREASED paddingTop to push legend down from X-axis ticks
+              paddingTop: 30, 
             }}
             payload={[
                 { value: 'Capital Invested', type: 'square', id: 'ID01', color: chartCapitalColor },
