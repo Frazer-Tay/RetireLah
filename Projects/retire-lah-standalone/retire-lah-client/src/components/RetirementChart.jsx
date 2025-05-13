@@ -17,6 +17,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+
 const RetirementChart = ({ data }) => {
   // Placeholder for no data remains the same
   if (!data || data.length === 0) {
@@ -60,7 +61,9 @@ const RetirementChart = ({ data }) => {
             top: 10, 
             right: 10, 
             left: 20, 
-            bottom: 40 // Increased bottom margin to give legend and X-axis label more room
+            // Adjusted bottom margin to ensure everything fits
+            // It needs to accommodate: Legend height + Legend paddingTop + XAxis label height + XAxis label dy (from line)
+            bottom: 45 
           }} 
           barGap={4} 
           barCategoryGap="20%"
@@ -71,7 +74,8 @@ const RetirementChart = ({ data }) => {
             label={{ 
               value: 'Age', 
               position: 'insideBottom', 
-              dy: 25, // Pushed "Age" label a bit further down to make space for legend
+              dy: 30, // Pushed "Age" label further down FROM THE X-AXIS LINE
+                      // This value positions the "Age" label vertically
               style: {fontSize: '0.875rem', fill: brandMediumTextColor, fontWeight: 500, fontFamily: 'Inter'} 
             }} 
             tick={{fontSize: '0.75rem', fill: brandLightTextColor, fontFamily: 'Inter'}}
@@ -95,8 +99,9 @@ const RetirementChart = ({ data }) => {
             wrapperStyle={{
               fontSize: '0.875rem', 
               fontFamily: 'Inter',
-              paddingTop: 15, // Increased padding: Space between X-axis ticks and legend
-                             // This effectively pushes the legend down
+              // This padding is between the bottom of the chart plot area (where X-axis ticks are) AND the legend.
+              // Increasing this pushes the legend further down FROM the ticks.
+              paddingTop: 10, 
             }}
             payload={[
                 { value: 'Capital Invested', type: 'square', id: 'ID01', color: chartCapitalColor },
