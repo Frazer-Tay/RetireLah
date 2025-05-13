@@ -2,7 +2,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-// CustomTooltip remains the same as the last version, ensure it's there.
+// CustomTooltip remains the same
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     const totalValue = payload.reduce((sum, entry) => sum + entry.value, 0);
@@ -17,10 +17,9 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-
 const RetirementChart = ({ data }) => {
+  // Placeholder for no data remains the same
   if (!data || data.length === 0) {
-    // Placeholder content remains the same
     return (
       <div className="bg-brand-card-bg p-6 sm:p-8 rounded-xl shadow-card-lg mt-8 sm:mt-10">
         <h3 className="text-xl sm:text-2xl font-semibold text-brand-dark-text mb-4">Investment Growth Over Time</h3>
@@ -33,6 +32,7 @@ const RetirementChart = ({ data }) => {
       </div>
     );
   }
+
   const formatYAxis = (tickItem) => `SGD ${tickItem / 1000}k`;
   const lastAge = data[data.length - 1]?.age || 'N/A';
 
@@ -44,7 +44,7 @@ const RetirementChart = ({ data }) => {
   const numYears = data.length;
   let xAxisInterval = "preserveStartEnd"; 
   if (numYears > 25) {
-    xAxisInterval = Math.floor(numYears / 12); // Show roughly 12-15 ticks
+    xAxisInterval = Math.floor(numYears / 12); 
   } else if (numYears > 12) {
     xAxisInterval = 1; 
   }
@@ -56,16 +56,14 @@ const RetirementChart = ({ data }) => {
       <ResponsiveContainer width="100%" height={400}>
         <BarChart 
           data={data} 
-          margin={{ top: 10, right: 10, left: 20, bottom: 50 }} // Increased bottom margin further for legend + X-axis label
+          margin={{ top: 10, right: 10, left: 20, bottom: 35 }} // Reduced bottom margin slightly, legend will take up space
           barGap={4} 
           barCategoryGap="20%"
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
           <XAxis 
             dataKey="age" 
-            // The 'label' prop here is for the axis title, not individual ticks.
-            // Recharts legend shouldn't pick this up.
-            label={{ value: 'Age', position: 'insideBottom', dy: 35, style: {fontSize: '0.875rem', fill: brandMediumTextColor, fontWeight: 500, fontFamily: 'Inter'} }} 
+            label={{ value: 'Age', position: 'insideBottom', dy: 20, style: {fontSize: '0.875rem', fill: brandMediumTextColor, fontWeight: 500, fontFamily: 'Inter'} }} 
             tick={{fontSize: '0.75rem', fill: brandLightTextColor, fontFamily: 'Inter'}}
             interval={xAxisInterval}
             padding={{ left: 10, right: 10 }}
@@ -80,12 +78,17 @@ const RetirementChart = ({ data }) => {
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(209, 213, 219, 0.4)' }}/>
           <Legend 
-            wrapperStyle={{fontSize: '0.875rem', fontFamily: 'Inter', paddingTop: '10px', paddingBottom: '0px', position: 'relative', bottom: '-10px' }} // Adjusted padding and bottom
+            wrapperStyle={{
+              fontSize: '0.875rem', 
+              fontFamily: 'Inter', 
+              paddingTop: '10px', // Add some padding above the legend
+              // No paddingBottom or position:relative needed if margin on BarChart is sufficient
+            }} 
             verticalAlign="bottom" 
-            align="center" // Center align legend items
+            align="center"
             iconType="square" 
             iconSize={10}
-            payload={[ // Explicitly define legend items to avoid picking up X-axis label
+            payload={[
                 { value: 'Capital Invested', type: 'square', id: 'ID01', color: chartCapitalColor },
                 { value: 'Capital Gains', type: 'square', id: 'ID02', color: chartGainsColor },
             ]}
