@@ -17,7 +17,6 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-
 const RetirementChart = ({ data }) => {
   // Placeholder for no data remains the same
   if (!data || data.length === 0) {
@@ -61,9 +60,7 @@ const RetirementChart = ({ data }) => {
             top: 10, 
             right: 10, 
             left: 20, 
-            // Adjusted bottom margin to ensure everything fits
-            // It needs to accommodate: Legend height + Legend paddingTop + XAxis label height + XAxis label dy (from line)
-            bottom: 45 
+            bottom: 50 // Increased bottom margin to accommodate everything comfortably
           }} 
           barGap={4} 
           barCategoryGap="20%"
@@ -71,16 +68,19 @@ const RetirementChart = ({ data }) => {
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
           <XAxis 
             dataKey="age" 
+            // The 'height' prop can also influence space below X-axis ticks
+            // but we usually control with dy of label and legend paddingTop.
+            // Let's keep X-axis label dy moderate, ensuring legend has space above it.
             label={{ 
               value: 'Age', 
               position: 'insideBottom', 
-              dy: 30, // Pushed "Age" label further down FROM THE X-AXIS LINE
-                      // This value positions the "Age" label vertically
+              dy: 35, // This positions "Age" label 35px below the X-axis line
               style: {fontSize: '0.875rem', fill: brandMediumTextColor, fontWeight: 500, fontFamily: 'Inter'} 
             }} 
             tick={{fontSize: '0.75rem', fill: brandLightTextColor, fontFamily: 'Inter'}}
             interval={xAxisInterval}
             padding={{ left: 10, right: 10 }}
+            // tickMargin={5} // Adds space between ticks and axis line
           />
           <YAxis 
             tickFormatter={formatYAxis} 
@@ -99,9 +99,9 @@ const RetirementChart = ({ data }) => {
             wrapperStyle={{
               fontSize: '0.875rem', 
               fontFamily: 'Inter',
-              // This padding is between the bottom of the chart plot area (where X-axis ticks are) AND the legend.
-              // Increasing this pushes the legend further down FROM the ticks.
-              paddingTop: 10, 
+              // This padding is CRUCIAL for pushing the legend DOWN from the X-axis ticks.
+              // Increase this value to move the legend further down.
+              paddingTop: 20, 
             }}
             payload={[
                 { value: 'Capital Invested', type: 'square', id: 'ID01', color: chartCapitalColor },
