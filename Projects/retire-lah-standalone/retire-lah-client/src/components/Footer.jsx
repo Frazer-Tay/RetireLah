@@ -7,13 +7,10 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="mb-8 flex justify-center">
           <img
-            src="https://www.wandering-bird.com/wp-content/uploads/2021/11/winter-motorhome-trip-tips.jpg"
+            src="https://www.wandering-bird.com/wp-content/uploads/2021/11/winter-motorhome-trip-tips.jpg" // Your chosen image
             alt="Inspiring journey towards financial independence"
             className="mx-auto h-40 md:h-48 w-auto max-w-xs md:max-w-sm object-cover rounded-lg shadow-xl"
-            onError={(e) => {
-              e.target.alt = 'Image placeholder for travel inspiration'; // Fallback alt text
-              e.target.style.display='none'; // Hide if image fails to load (optional)
-            }}
+            onError={(e) => { e.target.style.display='none'; /* Hide if image fails to load */ }}
           />
         </div>
         <p className="text-sm text-brand-medium-text">

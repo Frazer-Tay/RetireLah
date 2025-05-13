@@ -7,39 +7,34 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Pixel Art Palette (example, can be tweaked)
-        'px-bg': '#222034',      // Dark purple/blue background
-        'px-bg-light': '#302C42',// Lighter background for cards
-        'px-text': '#FFF1E8',    // Off-white text
-        'px-text-dim': '#9BADB7',// Dimmer text
-        'px-primary': '#FF007F', // Bright Pink/Magenta
-        'px-secondary': '#00E436',// Bright Green
-        'px-accent': '#FFCC00',  // Bright Yellow
-        'px-border': '#141220',  // Very dark border
-        'chart-capital': '#4267B2', // Blue for capital
-        'chart-gains': '#00A436',   // Green for gains
+        'brand-primary': '#3B82F6',        // Calming Blue (Blue-500)
+        'brand-primary-dark': '#2563EB',   // Darker Blue (Blue-600)
+        'brand-secondary': '#10B981',      // Calming Green (Emerald-500)
+        'brand-secondary-dark': '#059669', // Darker Green (Emerald-600)
+        'brand-light-bg': '#F3F4F6',       // Very Light Gray (Gray-100)
+        'brand-card-bg': '#FFFFFF',        // White
+        'brand-dark-text': '#1F2937',      // Dark Gray (Gray-800)
+        'brand-medium-text': '#4B5563',    // Medium Gray (Gray-600)
+        'brand-light-text': '#6B7280',     // Light Gray (Gray-500)
+        'chart-capital': '#A0AEC0',        // Neutral Gray for capital (Gray-400/500)
+        'chart-gains': '#68D391',          // Softer Green for gains (Green-400)
+        'accent-orange': '#F59E0B',        // Amber-500 for subtle accents if needed
+        'accent-purple': '#8B5CF6',        // Violet-500 for subtle accents if needed
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'], // Fallback
-        pixel: ['"Press Start 2P"', 'monospace', 'cursive'], // Pixel font
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans"', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
       },
       boxShadow: {
-        'pixel': '4px 4px 0px 0px #141220', // Pixelated shadow
-        'pixel-sm': '2px 2px 0px 0px #141220',
+        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        'card-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       },
       borderRadius: {
-        'none': '0',
-        'sm': '0.125rem', // Minimal rounding if any
-        'DEFAULT': '0',   // Default to no rounding
-        'md': '0',
-        'lg': '0',
-        'xl': '0',
+        'xl': '0.75rem', // 12px
+        '2xl': '1rem',   // 16px
       }
     },
   },
   plugins: [
-    require('@tailwindcss/forms')({
-      strategy: 'class', // or 'base' if you prefer global styles
-    }),
+    require('@tailwindcss/forms'),
   ],
 }

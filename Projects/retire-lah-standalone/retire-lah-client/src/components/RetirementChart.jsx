@@ -6,10 +6,10 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     const totalValue = payload.reduce((sum, entry) => sum + entry.value, 0);
     return (
-      <div className="bg-px-bg p-2 border-2 border-px-border shadow-pixel-sm text-xs opacity-95 font-pixel">
-        <p className="label font-normal text-px-accent mb-1">{`Age: ${label}`}</p>
-        {payload.map((entry, index) => (<p key={`item-${index}`} style={{ color: entry.fill }} className="font-normal">{`${entry.name}: SGD ${entry.value.toLocaleString()}`}</p>))}
-        {payload.length > 1 && (<p className="font-normal mt-1 pt-1 border-t-2 border-px-border text-px-text">{`Total: SGD ${totalValue.toLocaleString()}`}</p>)}
+      <div className="bg-white p-3 shadow-lg rounded-md border border-gray-300 text-sm opacity-95">
+        <p className="label font-semibold text-brand-dark-text mb-1.5">{`Age: ${label}`}</p>
+        {payload.map((entry, index) => (<p key={`item-${index}`} style={{ color: entry.fill }} className="font-medium">{`${entry.name}: SGD ${entry.value.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}`}</p>))}
+        {payload.length > 1 && (<p className="font-bold mt-2 pt-2 border-t border-gray-200 text-brand-dark-text">{`Total Value: SGD ${totalValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0})}`}</p>)}
       </div>
     );
   }
@@ -19,48 +19,54 @@ const CustomTooltip = ({ active, payload, label }) => {
 const RetirementChart = ({ data }) => {
   if (!data || data.length === 0) {
     return (
-      <div className="card-pixel mt-6 sm:mt-8 py-10 text-center">
-        <h3 className="text-md sm:text-lg font-normal text-px-accent mb-3 uppercase">Growth Over Time</h3>
-        {/* Pixel art style placeholder for chart */}
-        <div className="w-full h-48 bg-px-bg border-2 border-px-border flex items-center justify-center text-px-text-dim">
-          <p>[ CALCULATE TO SEE CHART ]</p>
+      <div className="bg-brand-card-bg p-6 sm:p-8 rounded-xl shadow-card-lg mt-8 sm:mt-10">
+        <h3 className="text-xl sm:text-2xl font-semibold text-brand-dark-text mb-4">Investment Growth Over Time</h3>
+        <div className="text-center text-brand-medium-text py-16 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
+            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <p className="mt-3 text-lg font-medium">Enter details to see your projection.</p>
         </div>
       </div>
     );
   }
-  const formatYAxis = (tickItem) => `${tickItem / 1000}k`;
+  const formatYAxis = (tickItem) => `SGD ${tickItem / 1000}k`;
   const lastAge = data[data.length - 1]?.age || 'N/A';
 
+  // Colors from tailwind.config.js
+  const chartCapitalColor = '#A0AEC0'; // theme.extend.colors['chart-capital']
+  const chartGainsColor = '#68D391';   // theme.extend.colors['chart-gains']
+  const brandMediumTextColor = '#4B5563'; // theme.extend.colors['brand-medium-text']
+  const brandLightTextColor = '#6B7280'; // theme.extend.colors['brand-light-text']
+
+
   return (
-    <div className="card-pixel mt-6 sm:mt-8 p-4">
-      <h3 className="text-md sm:text-lg font-normal text-px-accent mb-1 uppercase">Growth Over Time</h3>
-      <p className="text-[10px] text-px-text-dim mb-4 leading-tight">Projection until age {lastAge}.</p>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} margin={{ top: 5, right: 0, left: -25, bottom: 20 }} barCategoryGap="25%">
-          <CartesianGrid strokeDasharray="0" stroke={false} horizontal={true} vertical={false} strokeOpacity={0.2} />
+    <div className="bg-brand-card-bg p-4 sm:p-6 rounded-xl shadow-card-lg mt-8 sm:mt-10">
+      <h3 className="text-xl sm:text-2xl font-semibold text-brand-dark-text mb-1">Investment Growth Over Time</h3>
+      <p className="text-xs text-brand-light-text mb-6">Projected values until retirement age {lastAge}.</p>
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={data} margin={{ top: 5, right: 5, left: 15, bottom: 30 }} barGap={4} barCategoryGap="20%">
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
           <XAxis 
             dataKey="age" 
-            tick={{ fontSize: '10px', fill: 'var(--color-px-text-dim)', fontFamily: '"Press Start 2P"' }} 
-            axisLine={{ stroke: 'var(--color-px-border)', strokeWidth: 2 }}
-            tickLine={{ stroke: 'var(--color-px-border)', strokeWidth: 2 }}
+            label={{ value: 'Age', position: 'insideBottom', dy: 25, style: {fontSize: '0.875rem', fill: brandMediumTextColor, fontWeight: 500} }} 
+            tick={{fontSize: '0.8rem', fill: brandLightTextColor}}
             interval="preserveStartEnd" 
-            dy={10}
-          />
+            padding={{ left: 10, right: 10 }}/>
           <YAxis 
             tickFormatter={formatYAxis} 
-            tick={{ fontSize: '10px', fill: 'var(--color-px-text-dim)', fontFamily: '"Press Start 2P"' }}
-            axisLine={{ stroke: 'var(--color-px-border)', strokeWidth: 2 }}
-            tickLine={{ stroke: 'var(--color-px-border)', strokeWidth: 2 }}
-            width={55} // Adjusted width
-          />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--color-px-accent)', fillOpacity: 0.1 }}/>
+            label={{ value: 'SGD Value', angle: -90, position: 'insideLeft', dx: -10, style: {fontSize: '0.875rem', fill: brandMediumTextColor, fontWeight: 500} }}
+            tick={{fontSize: '0.8rem', fill: brandLightTextColor}}
+            width={70} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(209, 213, 219, 0.4)' }}/> {/* Lighter gray cursor */}
           <Legend 
-            wrapperStyle={{fontSize: '10px', paddingTop: '10px', fontFamily: '"Press Start 2P"'}} 
-            verticalAlign="bottom"
-            iconSize={8}
+            wrapperStyle={{fontSize: '0.875rem', paddingTop: '15px', paddingBottom: '5px'}} 
+            verticalAlign="bottom" 
+            iconType="square" 
+            iconSize={10}
           />
-          <Bar dataKey="capitalInvested" stackId="a" name="Capital" fill="var(--color-chart-capital)" radius={0} /> {/* No radius for pixel art */}
-          <Bar dataKey="capitalGains" stackId="a" name="Gains" fill="var(--color-chart-gains)" radius={0} />
+          <Bar dataKey="capitalInvested" stackId="a" name="Capital Invested" fill={chartCapitalColor} radius={[4, 4, 0, 0]} />
+          <Bar dataKey="capitalGains" stackId="a" name="Capital Gains" fill={chartGainsColor} radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
