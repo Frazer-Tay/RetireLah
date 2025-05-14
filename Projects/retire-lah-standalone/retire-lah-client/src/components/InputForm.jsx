@@ -4,10 +4,8 @@ import React from 'react';
 const InputForm = ({ formData, setFormData, onSubmit, isLoading }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Ensure numeric inputs are treated as numbers, allow empty string for clearing
     const isNumericField = ["currentAge", "retirementAge", "desiredMonthlyLifestyleToday", "assumedInflationRate", "initialInvestment"].includes(name);
     const processedValue = isNumericField && value !== "" ? Number(value) : value;
-    
     setFormData(prev => ({ ...prev, [name]: processedValue }));
   };
 
@@ -36,13 +34,15 @@ const InputForm = ({ formData, setFormData, onSubmit, isLoading }) => {
 
       <div>
         <label htmlFor="desiredMonthlyLifestyleToday" className="block text-sm font-medium text-brand-medium-text mb-1.5">Desired Monthly Lifestyle (Today's Value, SGD)</label>
-        <input type="number" name="desiredMonthlyLifestyleToday" id="desiredMonthlyLifestyleToday" value={formData.desiredMonthlyLifestyleToday} onChange={handleChange} min="100" step="100" required className="py-2.5 px-3.5" placeholder="e.g., 3000"/>
+        {/* Allow any positive number, step="0.01" for cents or remove step for whole numbers if preferred */}
+        <input type="number" name="desiredMonthlyLifestyleToday" id="desiredMonthlyLifestyleToday" value={formData.desiredMonthlyLifestyleToday} onChange={handleChange} min="1" step="any" required className="py-2.5 px-3.5" placeholder="e.g., 3000"/>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
         <div>
           <label htmlFor="initialInvestment" className="block text-sm font-medium text-brand-medium-text mb-1.5">Current Savings/Initial Investment (SGD)</label>
-          <input type="number" name="initialInvestment" id="initialInvestment" value={formData.initialInvestment} onChange={handleChange} min="0" step="1000" required className="py-2.5 px-3.5" placeholder="e.g., 25000"/>
+          {/* Allow any positive number, step="any" for flexibility */}
+          <input type="number" name="initialInvestment" id="initialInvestment" value={formData.initialInvestment} onChange={handleChange} min="0" step="any" required className="py-2.5 px-3.5" placeholder="e.g., 25000"/>
         </div>
         <div>
           <label htmlFor="assumedInflationRate" className="block text-sm font-medium text-brand-medium-text mb-1.5">Assumed Annual Inflation (%)</label>
@@ -51,7 +51,7 @@ const InputForm = ({ formData, setFormData, onSubmit, isLoading }) => {
       </div>
       
       <div>
-        <label htmlFor="instrument" className="block text-sm font-medium text-brand-medium-text mb-1.5">Investment Instrument</label>
+        <label htmlFor="instrument" className="block text-sm font-medium text-brand-medium-text mb-1.5">Investment Instrument <span className="text-xs text-brand-light-text">(applies to initial & future savings)</span></label>
         <select name="instrument" id="instrument" value={formData.instrument} onChange={handleChange} required className="py-2.5 px-3.5 pr-10">
           <option value="spy">SPY (S&P 500, ~10% Avg. Return)</option>
           <option value="qqq">QQQ (Tech Focused, ~13% Avg. Return)</option>
