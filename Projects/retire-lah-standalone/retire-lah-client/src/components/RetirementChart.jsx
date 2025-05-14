@@ -43,11 +43,14 @@ const RetirementChart = ({ data }) => {
 
   const numYears = data.length;
   let xAxisInterval = "preserveStartEnd"; 
-  if (numYears > 25) {
-    xAxisInterval = Math.floor(numYears / 12); 
-  } else if (numYears > 12) {
-    xAxisInterval = 1; 
+  if (numYears > 30) { // Be more aggressive with skipping for very long horizons
+    xAxisInterval = Math.floor(numYears / 10); 
+  } else if (numYears > 15) {
+    xAxisInterval = Math.floor(numYears / 15); // Aim for ~15 ticks
+  } else if (numYears > 8) {
+    xAxisInterval = 1; // Show every other
   }
+  // For < 8 years, "preserveStartEnd" or 0 (show all) will likely be fine
 
   return (
     <div className="bg-brand-card-bg p-4 sm:p-6 rounded-xl shadow-card-lg mt-8 sm:mt-10">
@@ -60,8 +63,7 @@ const RetirementChart = ({ data }) => {
             top: 10, 
             right: 10, 
             left: 20, 
-            // Increased bottom margin significantly to make ample space
-            bottom: 60 
+            bottom: 55 // Generous bottom margin for legend and X-axis label
           }} 
           barGap={4} 
           barCategoryGap="20%"
@@ -72,14 +74,13 @@ const RetirementChart = ({ data }) => {
             label={{ 
               value: 'Age', 
               position: 'insideBottom', 
-              // This dy positions "Age" label relative to X-axis line.
-              // It needs to be large enough to be below the legend.
-              dy: 45, 
+              dy: 40, // Push "Age" label significantly down from the X-axis line
               style: {fontSize: '0.875rem', fill: brandMediumTextColor, fontWeight: 500, fontFamily: 'Inter'} 
             }} 
             tick={{fontSize: '0.75rem', fill: brandLightTextColor, fontFamily: 'Inter'}}
             interval={xAxisInterval}
             padding={{ left: 10, right: 10 }}
+            // tickMargin={5} // Space between tick text and X-axis line
           />
           <YAxis 
             tickFormatter={formatYAxis} 
@@ -95,12 +96,25 @@ const RetirementChart = ({ data }) => {
             align="center"
             iconType="square" 
             iconSize={10}
+            // The 'y' prop for Legend specifies the y-coordinate of the legend's top-left corner.
+            // We can use this for more precise vertical positioning if wrapperStyle isn't enough.
+            // However, it might require calculating based on chart height.
+            // Let's try adjusting wrapperStyle first.
             wrapperStyle={{
               fontSize: '0.875rem', 
               fontFamily: 'Inter',
-              // SIGNIFICANTLY INCREASED paddingTop to push legend down from X-axis ticks
-              paddingTop: 30, 
+              // This paddingTop creates space between the X-axis ticks area and the legend.
+              paddingTop: 10, 
+              // Adding a bottom margin to the legend itself to push the X-axis label further down IF NEEDED
+              // marginBottom: 10, // This might push the X-axis label down if it's flowing after.
             }}
+            // You can also explicitly set the `y` coordinate of the legend.
+            // For example, if chart height is 400 and bottom margin is 55,
+            // then the plot area ends around 400 - 55 = 345.
+            // We want legend below X-axis ticks. X-axis ticks might take up ~20px.
+            // So, legend could start around y={345 - 20 - legendHeight}.
+            // This is more complex to calculate dynamically.
+            // Let's rely on flow and BarChart margin for now.
             payload={[
                 { value: 'Capital Invested', type: 'square', id: 'ID01', color: chartCapitalColor },
                 { value: 'Capital Gains', type: 'square', id: 'ID02', color: chartGainsColor },
