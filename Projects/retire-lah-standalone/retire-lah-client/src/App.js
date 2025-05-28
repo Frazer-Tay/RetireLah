@@ -1,131 +1,83 @@
-// retire-lah-client/src/App.js
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
+import './App.css';
 import InputForm from './components/InputForm';
 import ProjectionDisplay from './components/ProjectionDisplay';
-import Footer from './components/Footer';
-import { calculateMonthlySavingsNeeded, calculateTimeToFIRE } from './utils/calculator';
-import ReactGA from 'react-ga4'; // Import ReactGA here
-
-// Define Calculation Modes (keep this)
-const CALC_MODES = {
-  MONTHLY_SAVINGS: 'calculateMonthlySavings',
-  TIME_TO_FIRE: 'calculateTimeToFIRE',
-};
+import RetirementChart from './components/RetirementChart'; // Assuming this is the correct path
+import Footer from './components/Footer'; // Import Footer
+import ThemeToggle from './components/ThemeToggle'; // Import ThemeToggle
+import { calculateRetirementProjection } from './utils/calculator';
 
 function App() {
-  // ... (useState hooks for formData, projectionData, etc. remain the same as your last working version) ...
-  const initialFormState = { /* ... your initialFormState ... */ currentAge: 30, retirementAge: 55, desiredMonthlyLifestyleToday: 3000, assumedInflationRate: 2.5, initialInvestment: 10000, instrument: 'spy', plannedMonthlyInvestment: 1500,};
-  const [calcMode, setCalcMode] = useState(CALC_MODES.MONTHLY_SAVINGS);
-  const [formData, setFormData] = useState(initialFormState);
-  const [projectionData, setProjectionData] = useState(null);
-  const [isCalculating, setIsCalculating] = useState(true);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [projection, setProjection] = useState(null);
+  const [chartData, setChartData] = useState(null);
 
-
-  const performCalculation = useCallback((dataToCalculate, mode) => {
-    setError(null);
-    try {
-      let result;
-      if (mode === CALC_MODES.MONTHLY_SAVINGS) {
-        result = calculateMonthlySavingsNeeded(dataToCalculate);
-      } else if (mode === CALC_MODES.TIME_TO_FIRE) {
-        result = calculateTimeToFIRE(dataToCalculate);
-      } else {
-        throw new Error("Invalid calculation mode.");
-      }
-
-      if (result) {
-        setProjectionData(result);
-        // Send GA event for successful calculation
-        if (ReactGA.isInitialized) {
-          ReactGA.event({
-            category: "Retirement_Calculator",
-            action: "Calculate_Projection_Success",
-            label: `Mode: ${mode}`, // e.g., "Mode: calculateMonthlySavings"
-            // value: result.targetNestEgg // Example: track the targetNestEgg value
-          });
-          console.log(`GA Event Sent: Calculate_Projection_Success, Mode: ${mode}`);
-        }
-      } else {
-         setProjectionData(null); // Should be caught by error handling below ideally
-      }
-    } catch (err) {
-      setError(err.message || "An error occurred during calculation. Please check inputs.");
-      setProjectionData(null);
-      if (ReactGA.isInitialized) {
-        ReactGA.event({
-          category: "Retirement_Calculator",
-          action: "Calculate_Projection_Error",
-          label: `Mode: ${mode} | Error: ${err.message || "Unknown"}`,
-        });
-        console.log(`GA Event Sent: Calculate_Projection_Error, Mode: ${mode}`);
-      }
-    }
-  }, []); // Dependencies are stable
-
-  // useEffect for initial load (remains the same)
   useEffect(() => {
-    const initialCalcData = { ...initialFormState, retirementAge: 50, initialInvestment: 25000 };
-    setFormData(initialCalcData);
-    setIsCalculating(true);
-    setIsInitialLoading(true);
-    const timer = setTimeout(() => {
-      performCalculation(initialCalcData, CALC_MODES.MONTHLY_SAVINGS);
-      setIsCalculating(false);
-      setIsInitialLoading(false);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [performCalculation]);
-
-  // handleSubmit (remains the same)
-  const handleSubmit = (e) => {
-    if (e) e.preventDefault();
-    setIsCalculating(true);
-    const timer = setTimeout(() => {
-      performCalculation(formData, calcMode);
-      setIsCalculating(false);
-    }, 150);
-  };
-
-  const handleModeChange = (newMode) => {
-    setCalcMode(newMode);
-    setProjectionData(null); 
-    setError(null);
-    if (ReactGA.isInitialized) {
-        ReactGA.event({
-            category: "Retirement_Calculator",
-            action: "Switch_Mode",
-            label: `Switched to: ${newMode}`
-        });
-        console.log(`GA Event Sent: Switch_Mode to ${newMode}`);
+    // Apply theme on initial load
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      // default to light if no theme or theme is light
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light'); 
     }
-  };
+  }, []);
 
-  // HeaderIcon and JSX structure remain the same as your last working version
-  const HeaderIcon = () => ( <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-9 md:h-10 mr-3 text-white opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>);
+  const handleCalculation = (data) => {
+    const result = calculateRetirementProjection(data);
+    setProjection(result);
+
+    const newChartData = {
+      labels: result.annualData.map(d => `Year ${d.year}`),
+      datasets: [
+        {
+          label: 'Savings Balance',
+          data: result.annualData.map(d => d.savingsBalance),
+          borderColor: document.documentElement.classList.contains('dark') ? '#60A5FA' : '#3B82F6', // brand-primary or dark-brand-primary
+          backgroundColor: document.documentElement.classList.contains('dark') ? 'rgba(96, 165, 250, 0.5)' : 'rgba(59, 130, 246, 0.5)',
+          fill: true,
+          tension: 0.1,
+        },
+      ],
+    };
+    setChartData(newChartData);
+  };
   
+  // Effect to update chart colors when theme changes
+  useEffect(() => {
+    if (projection) { // only update if there's data
+      handleCalculation(projection.inputs); // Re-calculate/re-prepare chart data with current theme
+    }
+  }, [localStorage.getItem('theme')]); // Re-run when theme changes - listen to local storage or a state variable if possible
+
   return (
-    <div className="min-h-screen flex flex-col bg-brand-light-bg">
-      <header className="bg-brand-primary text-white py-5 sm:py-6 shadow-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold flex items-center justify-center tracking-tight"><HeaderIcon />Retire Lah!</h1>
-          <p className="text-sm sm:text-base opacity-90 mt-1">Your F.I.R.E. (Financial Independence, Retire Early) planner for Singaporeans.</p>
+    <div className="min-h-screen bg-brand-light-bg dark:bg-dark-brand-light-bg flex flex-col items-center text-brand-dark-text dark:text-dark-brand-dark-text transition-colors duration-300 ease-in-out">
+      <header className="w-full bg-brand-primary dark:bg-dark-brand-primary text-white py-6 shadow-md transition-colors duration-300 ease-in-out">
+        <div className="container mx-auto flex justify-between items-center px-4">
+          <div>
+            <h1 className="text-4xl font-bold text-center">RetireLah!</h1>
+            <p className="text-center text-lg mt-2">Your Malaysian Retirement Planner</p>
+          </div>
+          <ThemeToggle />
         </div>
       </header>
-      <main className="container mx-auto px-4 py-8 sm:py-10 flex-grow w-full max-w-4xl xl:max-w-5xl self-center">
-        <div className="mb-6 flex justify-center space-x-2 sm:space-x-4">
-            <button onClick={() => handleModeChange(CALC_MODES.MONTHLY_SAVINGS)} className={`px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg text-sm sm:text-base font-semibold transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary ${calcMode === CALC_MODES.MONTHLY_SAVINGS ? 'bg-brand-primary text-white shadow-md' : 'bg-white text-brand-primary border border-brand-primary hover:bg-blue-50'}`}>Calculate Monthly Savings</button>
-            <button onClick={() => handleModeChange(CALC_MODES.TIME_TO_FIRE)} className={`px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg text-sm sm:text-base font-semibold transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-secondary ${calcMode === CALC_MODES.TIME_TO_FIRE ? 'bg-brand-secondary text-white shadow-md' : 'bg-white text-brand-secondary border border-brand-secondary hover:bg-green-50'}`}>Calculate Time to F.I.R.E.</button>
-        </div>
-        <InputForm formData={formData} setFormData={setFormData} onSubmit={handleSubmit} isLoading={isCalculating} calcMode={calcMode} CALC_MODES={CALC_MODES} />
-        {error && ( <div className="mt-8 bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow-md" role="alert"><div className="flex"><div className="py-1"><svg className="fill-current h-6 w-6 text-red-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zM9 5v6h2V5H9zm0 8v2h2v-2H9z"/></svg></div><div><p className="font-bold text-red-800">Calculation Error</p><p className="text-sm text-red-700">{error}</p></div></div></div>)}
-        {isInitialLoading && !error && ( <div className="mt-12 text-center flex flex-col items-center justify-center py-16"><div className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-t-4 border-b-4 border-brand-primary mb-6"></div><p className="text-brand-medium-text text-lg sm:text-xl font-medium">Loading Initial Projection...</p></div>)}
-        {!isInitialLoading && projectionData && !error && ( <ProjectionDisplay data={projectionData} calcMode={calcMode} CALC_MODES={CALC_MODES}/> )}
-        {!isInitialLoading && !projectionData && !error && ( <div className="mt-12 text-center flex flex-col items-center justify-center py-16"><p className="text-brand-medium-text text-lg">Please adjust your plan and calculate, or switch modes.</p></div> )}
+
+      <main className="flex-grow w-full max-w-4xl p-6 space-y-8">
+        <InputForm onCalculate={handleCalculation} />
+        {projection && chartData && (
+          <>
+            <ProjectionDisplay projection={projection} />
+            <div className="bg-brand-card-bg dark:bg-dark-brand-card-bg shadow-card-lg rounded-xl p-6 transition-colors duration-300 ease-in-out">
+              <h2 className="text-2xl font-semibold text-brand-dark-text dark:text-dark-brand-dark-text mb-4 text-center transition-colors duration-300 ease-in-out">Savings Projection Chart</h2>
+              <RetirementChart chartData={chartData} />
+            </div>
+          </>
+        )}
       </main>
+
       <Footer />
     </div>
   );
 }
+
 export default App;

@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
     "./public/index.html",
@@ -20,6 +21,15 @@ module.exports = {
         'chart-gains': '#68D391',          // Softer Green for gains (Green-400)
         'accent-orange': '#F59E0B',        // Amber-500 for subtle accents if needed
         'accent-purple': '#8B5CF6',        // Violet-500 for subtle accents if needed
+
+        // Dark mode specific colors
+        'dark-brand-primary': '#60A5FA', // Lighter Blue for dark mode (Blue-400)
+        'dark-brand-secondary': '#34D399', // Lighter Green for dark mode (Emerald-400)
+        'dark-brand-light-bg': '#1F2937',  // Dark Gray for dark mode background (Gray-800)
+        'dark-brand-card-bg': '#374151',   // Medium Dark Gray for dark mode cards (Gray-700)
+        'dark-brand-dark-text': '#F3F4F6', // Very Light Gray for dark mode text (Gray-100)
+        'dark-brand-medium-text': '#D1D5DB',// Light Gray for dark mode medium text (Gray-300)
+        'dark-brand-light-text': '#9CA3AF', // Lighter Gray for dark mode light text (Gray-400)
       },
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', '"Noto Sans"', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
